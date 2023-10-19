@@ -1,6 +1,7 @@
 package com.souza.employeeservice.controller;
 
 
+import com.souza.employeeservice.dto.ApiResponseDto;
 import com.souza.employeeservice.dto.EmployeeDto;
 import com.souza.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
@@ -24,10 +25,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeDto> getEmployeeById(
+    public ResponseEntity<ApiResponseDto> getEmployeeById(
             @PathVariable Long id
     ) {
-        System.out.println(id);
         var employee = employeeService.getEmployeeById(id);
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }

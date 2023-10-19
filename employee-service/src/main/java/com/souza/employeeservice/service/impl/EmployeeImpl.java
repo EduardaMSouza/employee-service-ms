@@ -1,14 +1,20 @@
 package com.souza.employeeservice.service.impl;
 
+import com.souza.employeeservice.dto.ApiResponseDto;
+import com.souza.employeeservice.dto.DepartmentDto;
 import com.souza.employeeservice.dto.EmployeeDto;
 import com.souza.employeeservice.entity.Employee;
 import com.souza.employeeservice.exception.EmailAlreadyInUseException;
 import com.souza.employeeservice.exception.ResourceNotFoundException;
 import com.souza.employeeservice.repository.EmployeeRepository;
+import com.souza.employeeservice.service.APIClient;
 import com.souza.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 
 @Service
@@ -18,6 +24,10 @@ public class EmployeeImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     private ModelMapper modelMapper;
+
+    //private WebClient webClient;
+
+    private APIClient  apiClient;
 
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
@@ -31,12 +41,27 @@ public class EmployeeImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDto getEmployeeById(Long id) {
-        var employee = employeeRepository.findById(id);
-        System.out.println(employee);
-        if(employee.isEmpty()) {
+    public ApiResponseDto getEmployeeById(Long id) {
+        var employee = employeeRepository.findById(id).get();
+
+
+        /*DepartmentDto departmentDto = webClient
+                .get()
+                .uri("http://localhost:8080/api/department/" + employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();*/
+
+        ApiResponseDto apiResponseDto = new ApiResponseDto();
+
+        EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
+        DepartmentDto departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
+        apiResponseDto.setEmployeeDto(employeeDto);
+        apiResponseDto.setDepartmentDto(departmentDto);
+
+        if(employee == null) {
             throw new ResourceNotFoundException("Employee id not found");
         }
-        return modelMapper.map(employee, EmployeeDto.class);
+        return apiResponseDto;
     }
 }
