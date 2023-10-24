@@ -9,6 +9,7 @@ import com.souza.employeeservice.exception.ResourceNotFoundException;
 import com.souza.employeeservice.repository.EmployeeRepository;
 import com.souza.employeeservice.service.APIClient;
 import com.souza.employeeservice.service.EmployeeService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class EmployeeImpl implements EmployeeService {
 
     private ModelMapper modelMapper;
 
-    //private WebClient webClient;
+//    private WebClient webClient;
 
     private APIClient  apiClient;
 
@@ -40,17 +41,18 @@ public class EmployeeImpl implements EmployeeService {
         return modelMapper.map(savedEmployee, EmployeeDto.class);
     }
 
+    @CircuitBreaker(name = "${spring.appliication.name}", fallbackMethod =  "getDefaultDepartment")
     @Override
     public ApiResponseDto getEmployeeById(Long id) {
         var employee = employeeRepository.findById(id).get();
 
 
-        /*DepartmentDto departmentDto = webClient
-                .get()
-                .uri("http://localhost:8080/api/department/" + employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();*/
+//        DepartmentDto departmentDto = webClient
+//                .get()
+//                .uri("http://localhost:8080/api/department/" + employee.getDepartmentCode())
+//                .retrieve()
+//                .bodyToMono(DepartmentDto.class)
+//                .block();
 
         ApiResponseDto apiResponseDto = new ApiResponseDto();
 
