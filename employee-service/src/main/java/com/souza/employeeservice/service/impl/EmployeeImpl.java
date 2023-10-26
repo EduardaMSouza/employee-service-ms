@@ -8,14 +8,10 @@ import com.souza.employeeservice.entity.Employee;
 import com.souza.employeeservice.exception.EmailAlreadyInUseException;
 import com.souza.employeeservice.exception.ResourceNotFoundException;
 import com.souza.employeeservice.repository.EmployeeRepository;
-import com.souza.employeeservice.service.APIClient;
 import com.souza.employeeservice.service.EmployeeService;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
@@ -64,9 +60,9 @@ public class EmployeeImpl implements EmployeeService {
 
         EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
 //        DepartmentDto departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
-        apiResponseDto.setEmployeeDto(employeeDto);
-        apiResponseDto.setDepartmentDto(departmentDto);
-        apiResponseDto.setOrganizationDto(organizationDto);
+        apiResponseDto.setEmployee(employeeDto);
+        apiResponseDto.setDepartment(departmentDto);
+        apiResponseDto.setOrganization(organizationDto);
 
         if(employee == null) {
             throw new ResourceNotFoundException("Employee id not found");
